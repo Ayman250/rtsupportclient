@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import ChannelSection from './channels/ChannelSection'
 import UserSection from './users/UserSection';
@@ -9,7 +8,7 @@ import Socket from './Socket.js'
 
 class App extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             channels: [],
             users: [],
@@ -20,12 +19,21 @@ class App extends Component {
     }
 
     componentDidMount(){
-        let socket = this.socket = new Socket();
+        let ws = new WebSocket('ws://localhost:4000')
+        let socket = this.socket = new Socket(ws);
         socket.on('connect', this.onConnect.bind(this));
         socket.on('disconnect', this.onDisconnect.bind(this));
         socket.on('channel add', this.onAddChannel.bind(this));
         socket.on('user add', this.onAddUser.bind(this));
         socket.on('user remove', this.onRemoveUser.bind(this));
+        ws.onopen = () => {
+            this.socket.emit('channel subscribe');
+        }
+
+        ws.onmessage = (e) => {
+            console.log(e.data);
+            this.onAddChannel(JSON.parse(e.data));
+        }
     }
 
     onConnect(){
@@ -40,7 +48,7 @@ class App extends Component {
 
 
     onAddMessage(message){
-        let messages = this.state;
+        let messages = this.state.channels;
         messages.push(message);
         this.setState({messages});
     }
@@ -71,13 +79,14 @@ class App extends Component {
     }
 
     onAddChannel(channel) {
+        console.log('ADDED CHANNEL');
         let channels = this.state.channels;
         channels.push(channel);
         this.setState({channels});
     }
 
     addChannel(name) {
-        //Tells server too add channel. Server will respond with new channel info
+        //Tells server to add channel. Server will respond with new channel info
         this.socket.emit('channel add', {name});
 
     }

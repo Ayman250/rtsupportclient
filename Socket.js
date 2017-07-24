@@ -1,12 +1,12 @@
 import EventEmitter from 'events'
 
 class Socket{
-    constructor(ws = new WebSocket('wss://echo.websocket.org'), ee = new EventEmitter()){
+    constructor(ws = new WebSocket(), ee = new EventEmitter()){
         this.ws = ws;
         this.ee = ee;
-        ws.onmessage = this.message.bind(this);
-        ws.onopen = this.open.bind(this);
-        ws.onclose = this.close.bind(this);
+        ws.onMessage = this.message.bind(this);
+        ws.onOpen = this.open.bind(this);
+        ws.onClose = this.close.bind(this);
 
     }
 
@@ -35,10 +35,12 @@ class Socket{
     }
 
     open(){
-        this.ee.emit('connected');
+        console.log('open');
+        this.ee.emit('connect');
     }
 
     close(){
+        console.log('close');
         this.ee.emit('disconnected');
     }
 }
