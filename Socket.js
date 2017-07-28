@@ -4,9 +4,9 @@ class Socket{
     constructor(ws = new WebSocket(), ee = new EventEmitter()){
         this.ws = ws;
         this.ee = ee;
-        ws.onMessage = this.message.bind(this);
-        ws.onOpen = this.open.bind(this);
-        ws.onClose = this.close.bind(this);
+        ws.onmessage = this.message.bind(this);
+        ws.onopen = this.open.bind(this);
+        ws.onclose = this.close.bind(this);
 
     }
 
@@ -35,12 +35,10 @@ class Socket{
     }
 
     open(){
-        console.log('open');
         this.ee.emit('connect');
     }
 
     close(){
-        console.log('close');
         this.ee.emit('disconnected');
     }
 }

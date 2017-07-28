@@ -19,21 +19,15 @@ class App extends Component {
     }
 
     componentDidMount(){
-        let ws = new WebSocket('ws://localhost:4000')
+        let ws = new WebSocket('ws://192.168.1.49:4000')
         let socket = this.socket = new Socket(ws);
         socket.on('connect', this.onConnect.bind(this));
         socket.on('disconnect', this.onDisconnect.bind(this));
         socket.on('channel add', this.onAddChannel.bind(this));
         socket.on('user add', this.onAddUser.bind(this));
         socket.on('user remove', this.onRemoveUser.bind(this));
-        ws.onopen = () => {
-            this.socket.emit('channel subscribe');
-        }
-
-        ws.onmessage = (e) => {
-            console.log(e.data);
-            this.onAddChannel(JSON.parse(e.data));
-        }
+        socket.on('user edit', this.onEditUser.bind(this));
+        socket.on('message add', this.onMessageAdd.bind(this));
     }
 
     onConnect(){
@@ -43,12 +37,13 @@ class App extends Component {
     }
 
     onDisconnect(){
+
         this.setState({connected: false});
     }
 
 
-    onAddMessage(message){
-        let messages = this.state.channels;
+    onMessageAdd(message){
+        let messages = this.state.messages;
         messages.push(message);
         this.setState({messages});
     }
@@ -79,7 +74,6 @@ class App extends Component {
     }
 
     onAddChannel(channel) {
-        console.log('ADDED CHANNEL');
         let channels = this.state.channels;
         channels.push(channel);
         this.setState({channels});
@@ -91,12 +85,12 @@ class App extends Component {
 
     }
 
-    setChannel(activeChannel) {
+    setChannel(activeChannel){
         this.setState({activeChannel});
         this.socket.emit('message unsubscribe');
         this.setState({messages: []});
-        this.socket.emit('message subscribe', {channelId: activeChannel.id});
-        // TODO: Get Channels Message
+        this.socket.emit('message subscribe',
+            {channelId: activeChannel.id});
     }
 
     setUserName(name){
@@ -105,7 +99,7 @@ class App extends Component {
     }
 
     addMessage(body){
-       let activeChannel = this.state;
+       let {activeChannel} = this.state;
        this.socket.emit('message add',
            {channelId: activeChannel.id, body});
     }

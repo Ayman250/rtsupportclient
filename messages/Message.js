@@ -5,7 +5,7 @@ class Messages extends Component{
 
     render(){
         let message = this.props.message;
-        let createdAt = fecha.format(message.createdAt, 'HH:mm:ss MM/DD/YY');
+        let createdAt = fecha.format(new Date(message.createdAt), 'HH:mm:ss MM/DD/YY');
         return(
             <li className="message">
                 <div className="Author">

@@ -4,7 +4,6 @@ class Channel extends Component{
     onClick(e){
         e.preventDefault();
         this.props.setChannel(this.props.channel);
-        console.log(this.props.activeChannel);
     }
     render(){
         const active = this.props.channel === this.props.activeChannel ? 'active' : '';
