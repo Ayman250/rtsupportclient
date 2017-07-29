@@ -66,7 +66,7 @@ class App extends Component {
     }
 
     onRemoveUser(removeUser){
-        let users = this.state.user;
+        let users = this.state.users;
         users = users.filter(user => {
             return user.id !== removeUser.id;
         });
